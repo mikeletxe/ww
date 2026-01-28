@@ -1,2 +1,325 @@
-# ww
-ww
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareRide Airport | Comparte tu taxi desde el aeropuerto</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-taxi"></i>
+                <h1>Share<span>Ride</span> Airport</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">Inicio</a>
+                <a href="#how-it-works" class="nav-link">Cómo funciona</a>
+                <a href="#search" class="nav-link">Buscar Viajes</a>
+                <a href="#create" class="nav-link">Crear Viaje</a>
+                <a href="#login" class="nav-link login-btn" id="loginBtn">Iniciar Sesión</a>
+                <a href="#register" class="nav-link register-btn" id="registerBtn">Registrarse</a>
+                <div class="user-menu hidden" id="userMenu">
+                    <img src="https://ui-avatars.com/api/?name=Usuario" alt="Avatar" class="user-avatar">
+                    <span id="userName">Usuario</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main>
+        <!-- Sección Hero -->
+        <section class="hero" id="home">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Comparte tu taxi desde el aeropuerto</h2>
+                    <p>Conecta con otros viajeros que llegan al mismo destino y ahorra hasta un 60% en tus traslados</p>
+                    <div class="hero-buttons">
+                        <button class="btn-primary" id="startJourneyBtn">
+                            <i class="fas fa-plane-departure"></i> Empezar un viaje
+                        </button>
+                        <button class="btn-secondary" id="findRidesBtn">
+                            <i class="fas fa-search"></i> Buscar compañeros
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Viajeros compartiendo taxi">
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Cómo funciona -->
+        <section class="how-it-works" id="how-it-works">
+            <div class="container">
+                <h2 class="section-title">¿Cómo funciona?</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>1. Indica tu destino</h3>
+                        <p>Selecciona tu aeropuerto/estación y tu destino final</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>2. Encuentra compañeros</h3>
+                        <p>Nuestro sistema busca viajeros con rutas similares</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h3>3. Coordina el viaje</h3>
+                        <p>Chatea y coordina los detalles del trayecto compartido</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h3>4. Ahorra dinero</h3>
+                        <p>Divide el costo del taxi y ahorra hasta un 60%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Crear Viaje -->
+        <section class="create-journey" id="create">
+            <div class="container">
+                <h2 class="section-title">Crear un nuevo viaje</h2>
+                <div class="journey-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="arrivalPoint"><i class="fas fa-plane-arrival"></i> Punto de llegada</label>
+                            <select id="arrivalPoint" class="form-control">
+                                <option value="">Selecciona aeropuerto/estación</option>
+                                <option value="MAD">Madrid-Barajas (MAD)</option>
+                                <option value="BCN">Barcelona-El Prat (BCN)</option>
+                                <option value="AGP">Málaga-Costa del Sol (AGP)</option>
+                                <option value="PMI">Palma de Mallorca (PMI)</option>
+                                <option value="SVQ">Sevilla (SVQ)</option>
+                                <option value="VLC">Valencia (VLC)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="arrivalTime"><i class="fas fa-clock"></i> Hora de llegada</label>
+                            <input type="datetime-local" id="arrivalTime" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="destination"><i class="fas fa-map-pin"></i> Destino final</label>
+                        <input type="text" id="destination" class="form-control" placeholder="Ej: Hotel NH Collection Madrid, Calle Santa Isabel">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="passengers"><i class="fas fa-user-friends"></i> Pasajeros</label>
+                            <select id="passengers" class="form-control">
+                                <option value="1">1 pasajero</option>
+                                <option value="2">2 pasajeros</option>
+                                <option value="3">3 pasajeros</option>
+                                <option value="4">4 pasajeros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="luggage"><i class="fas fa-suitcase"></i> Equipaje</label>
+                            <select id="luggage" class="form-control">
+                                <option value="light">Equipaje ligero (1 maleta)</option>
+                                <option value="medium">Equipaje medio (2 maletas)</option>
+                                <option value="heavy">Equipaje pesado (3+ maletas)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary btn-large" id="createJourneyBtn">
+                        <i class="fas fa-search"></i> Buscar compañeros
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Buscar Viajes -->
+        <section class="search-rides" id="search">
+            <div class="container">
+                <h2 class="section-title">Viajes disponibles cerca de ti</h2>
+                <div class="search-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar por destino o aeropuerto...">
+                    </div>
+                    <button class="btn-filter" id="filterBtn">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+                
+                <div class="rides-container">
+                    <div class="rides-list" id="ridesList">
+                        <!-- Los viajes se cargarán aquí dinámicamente -->
+                    </div>
+                    <div class="rides-map" id="mapContainer">
+                        <div id="map"></div>
+                        <p class="map-notice">Mapa interactivo con las ubicaciones de los viajes</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Chat -->
+        <section class="chat-section hidden" id="chatSection">
+            <div class="container">
+                <div class="chat-header">
+                    <h3><i class="fas fa-comments"></i> Chat del viaje</h3>
+                    <button class="btn-close-chat" id="closeChatBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-info">
+                        <h4 id="chatTripTitle">Viaje al Centro de Madrid</h4>
+                        <p><i class="fas fa-clock"></i> <span id="chatTripTime">Hoy, 15:30</span></p>
+                        <p><i class="fas fa-map-marker-alt"></i> <span id="chatTripDestination">Desde MAD a Gran Vía</span></p>
+                        <div class="chat-members" id="chatMembers">
+                            <div class="member">
+                                <img src="https://ui-avatars.com/api/?name=Ana+G" alt="Ana G">
+                                <span>Ana G (Tú)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Los mensajes se cargarán aquí -->
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" placeholder="Escribe un mensaje...">
+                        <button id="sendMessageBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de Login/Registro -->
+    <div class="modal-overlay hidden" id="authModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Iniciar Sesión</h2>
+                <button class="modal-close" id="modalCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Iniciar Sesión</button>
+                    <button class="auth-tab" data-tab="register">Registrarse</button>
+                </div>
+                
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Contraseña</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">Iniciar Sesión</button>
+                    <div class="auth-divider">
+                        <span>O continúa con</span>
+                    </div>
+                    <div class="auth-social">
+                        <button type="button" class="btn-social google">
+                            <i class="fab fa-google"></i> Google
+                        </button>
+                        <button type="button" class="btn-social apple">
+                            <i class="fab fa-apple"></i> Apple
+                        </button>
+                    </div>
+                </form>
+                
+                <form id="registerForm" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="registerName">Nombre completo</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Contraseña</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPhone">Teléfono (opcional)</label>
+                        <input type="tel" id="registerPhone">
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">Crear cuenta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-taxi"></i>
+                    <h3>Share<span>Ride</span> Airport</h3>
+                    <p>Conectando viajeros, reduciendo costos y promoviendo la movilidad sostenible.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Enlaces</h4>
+                    <a href="#home">Inicio</a>
+                    <a href="#how-it-works">Cómo funciona</a>
+                    <a href="#search">Buscar viajes</a>
+                    <a href="#create">Crear viaje</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="#">Términos y condiciones</a>
+                    <a href="#">Política de privacidad</a>
+                    <a href="#">Seguridad</a>
+                    <a href="#">Centro de ayuda</a>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contacto</h4>
+                    <p><i class="fas fa-envelope"></i> info@shareride-airport.com</p>
+                    <p><i class="fas fa-phone"></i> +34 910 123 456</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 ShareRide Airport. Todos los derechos reservados.</p>
+                <p class="eco-badge"><i class="fas fa-leaf"></i> Calculamos que hemos ahorrado 1,245 kg de CO₂ con viajes compartidos</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+    <script src="auth.js"></script>
+    <script src="matching.js"></script>
+</body>
+</html>
